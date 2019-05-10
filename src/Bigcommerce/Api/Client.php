@@ -62,7 +62,8 @@ class Client
     private static $store_hash;
     private static $auth_token;
     private static $client_secret;
-    private static $stores_prefix = '/stores/%s/v2';
+    private static $version = 'v2';
+    private static $stores_prefix = '/stores/%s/';
     private static $api_url = 'https://api.bigcommerce.com';
     private static $login_url = 'https://login.bigcommerce.com';
 
@@ -110,9 +111,19 @@ class Client
         self::$store_hash = $settings['store_hash'];
 
         self::$client_secret = isset($settings['client_secret']) ? $settings['client_secret'] : null;
-
-        self::$api_path = self::$api_url . sprintf(self::$stores_prefix, self::$store_hash);
+        self::setApiPath();
         self::$connection = false;
+    }
+
+    public static function version($version)
+    {
+        self::$version = $version;
+        self::setApiPath();
+    }
+
+    public static function setApiPath()
+    {
+        self::$api_path = self::$api_url . sprintf(self::$stores_prefix, self::$store_hash) . self::$version;
     }
 
     /**
@@ -2052,5 +2063,45 @@ class Client
     {
         $filter = Filter::create($filter);
         return self::getCollection('/products/'.$productId.'/skus' . $filter->toQuery(), 'Sku');
+    }
+
+    /**
+     * Updates a product Variant.
+     *
+     * @param int $productId product id
+     * @param int $variantId variant id
+     * @param mixed $object fields to update
+     * @return mixed
+     */
+    public static function updateVariants($productId, $variantId, $object)
+    {
+        //此处要使用v3版本的接口才能生效
+        self::version('v3');
+        return self::updateResource('/catalog/products/' . $productId . '/variants/' . $variantId, $object);
+    }
+
+    /**
+     * Update the given product.
+     *
+     * @param int $id product id
+     * @param mixed $object fields to update
+     * @return mixed
+     */
+    public static function updateProductV3($id, $object)
+    {
+        self::version('v3');
+        return self::updateResource('/catalog/products/' . $id, $object);
+    }
+
+    /**
+     * Create a new product.
+     *
+     * @param mixed $object fields to create
+     * @return mixed
+     */
+    public static function createProductV3($object)
+    {
+        self::version('v3');
+        return self::createResource('/catalog/products', $object);
     }
 }
