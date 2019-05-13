@@ -2131,4 +2131,29 @@ class Client
         self::version('v3');
         return self::getResource('/catalog/products/' . $id, 'Product');
     }
+
+    /**
+     * Gets collection of images for a product.
+     *
+     * @param int $id product id
+     * @return mixed array|string list of products or XML string if useXml is true
+     */
+    public static function getProductImagesV3($id)
+    {
+        self::version('v3');
+        return self::getResource('/catalog/products/' . $id . '/images', 'Product');
+    }
+
+    /**
+     * Delete the given product image.
+     *
+     * @param int $productId
+     * @param int $imageId
+     * @return mixed
+     */
+    public static function deleteProductImageV3($productId, $imageId)
+    {
+        self::version('v3');
+        return self::deleteResource('/catalog/products/' . $productId . '/images/' . $imageId);
+    }
 }
