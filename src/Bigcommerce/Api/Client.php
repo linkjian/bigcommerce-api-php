@@ -2104,4 +2104,31 @@ class Client
         self::version('v3');
         return self::createResource('/catalog/products', $object);
     }
+
+    /**
+     * get a product Variants.
+     *
+     * @param int $productId product id
+     * @param int $variantId variant id
+     * @param mixed $object fields to update
+     * @return mixed
+     */
+    public static function getVariants($productId)
+    {
+        //此处要使用v3版本的接口才能生效
+        self::version('v3');
+        return self::getResource('/catalog/products/' . $productId . '/variants');
+    }
+
+    /**
+     * Returns a single product resource by the given id.
+     *
+     * @param int $id product id
+     * @return Resources\Product|string
+     */
+    public static function getProductV3($id)
+    {
+        self::version('v3');
+        return self::getResource('/catalog/products/' . $id, 'Product');
+    }
 }
