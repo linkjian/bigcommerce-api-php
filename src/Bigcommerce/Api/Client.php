@@ -67,6 +67,8 @@ class Client
     private static $api_url = 'https://api.bigcommerce.com';
     private static $login_url = 'https://login.bigcommerce.com';
 
+    private static $use_original_response = false;
+
     /**
      * Configure the API client with the required settings to access
      * the API for a store.
@@ -270,7 +272,9 @@ class Client
     public static function getCollection($path, $resource = 'Resource')
     {
         $response = self::connection()->get(self::$api_path . $path);
-
+        if (self::$use_original_response) {
+            return json_decode(json_encode($response), true);
+        }
         return self::mapCollection($resource, $response);
     }
 
@@ -284,7 +288,9 @@ class Client
     public static function getResource($path, $resource = 'Resource')
     {
         $response = self::connection()->get(self::$api_path . $path);
-
+        if (self::$use_original_response) {
+            return json_decode(json_encode($response), true);
+        }
         return self::mapResource($resource, $response);
     }
 
@@ -2155,5 +2161,15 @@ class Client
     {
         self::version('v3');
         return self::deleteResource('/catalog/products/' . $productId . '/images/' . $imageId);
+    }
+
+    public static function useOriginalResponse()
+    {
+        self::$use_original_response = true;
+    }
+
+    public static function notUseOriginalResponse()
+    {
+        self::$use_original_response = false;
     }
 }
